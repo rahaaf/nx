@@ -1,0 +1,339 @@
+<div class="card">
+  <p-table
+    #dt1
+    [value]="customers"
+    [columns]="selectedColumns"
+    dataKey="id"
+    [rows]="5"
+    [showCurrentPageReport]="true"
+    [rowsPerPageOptions]="[5, 10, 50]"
+    [loading]="loading"
+    [paginator]="true"
+    stateStorage="session"
+    stateKey="statedemo-session"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+    [globalFilterFields]="['name.first', 'gender', 'location.city', 'nat']"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex">
+        <button
+          pButton
+          label="Clear"
+          class="p-button-outlined"
+          icon="pi pi-filter-slash"
+          (click)="clear(dt1)"
+        ></button>
+        <button
+          type="button"
+          pButton
+          pRipple
+          icon="pi pi-file"
+          (click)="dt1.exportCSV()"
+          class="mr-2"
+          pTooltip="CSV"
+          tooltipPosition="bottom"
+        ></button>
+        <p-multiSelect
+          [options]="cols"
+          [(ngModel)]="selectedColumns"
+          optionLabel="header"
+          selectedItemsLabel="{0} columns selected"
+          [style]="{ 'min-width': '200px' }"
+          placeholder="Choose Columns"
+        ></p-multiSelect>
+        <span class="p-input-icon-left ml-auto">
+          <i class="pi pi-search"></i>
+          <input
+            #input
+            pInputText
+            type="text"
+            (input)="dt1.filterGlobal(input.value, 'contains')"
+            placeholder="Search keyword"
+          />
+        </span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th pSortableColumn="name.first">
+          Name <p-sortIcon field="name.first"></p-sortIcon>
+        </th>
+        <th pSortableColumn="gender">
+          Gender
+          <p-columnFilter
+            field="gender"
+            matchMode="in"
+            display="menu"
+            [showMatchModes]="false"
+            [showOperator]="false"
+            [showAddButton]="false"
+          >
+            <ng-template pTemplate="header">
+              <div class="px-3 pt-3 pb-0">
+                <span class="font-bold">Gender</span>
+              </div>
+            </ng-template>
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-multiSelect
+                [ngModel]="value"
+                [options]="gender"
+                placeholder="Any"
+                defaultLabel="Select a Gender"
+                (onChange)="filter($event.value)"
+                optionValue
+              >
+                <ng-template let-option pTemplate="item">
+                  <div class="inline-block vertical-align-middle">
+                    <span class="ml-1 mt-1">{{ option }}</span>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+          <p-sortIcon field="gender"></p-sortIcon>
+        </th>
+        <th pSortableColumn="location.city">
+          Location
+          <p-sortIcon field="location.city"></p-sortIcon>
+        </th>
+        <th pSortableColumn="email">
+          E-mail
+          <p-sortIcon field="email"></p-sortIcon>
+        </th>
+        <th pSortableColumn="dob.age">
+          Current Age
+          <p-sortIcon field="dob.age"></p-sortIcon>
+        </th>
+        <th pSortableColumn="registered.date">
+          Registration Seniority
+          <p-sortIcon field="registered.date"></p-sortIcon>
+        </th>
+        <th pSortableColumn="phone">
+          Phone number
+          <p-sortIcon field="phone"></p-sortIcon>
+        </th>
+        <th pSortableColumn="picture.thumbnail">
+          Picture
+          <p-sortIcon field="picture.thumbnail"></p-sortIcon>
+        </th>
+        <th pSortableColumn="nat">
+          Nationality
+          <p-columnFilter
+            field="nat"
+            matchMode="in"
+            display="menu"
+            [showMatchModes]="false"
+            [showOperator]="false"
+            [showAddButton]="false"
+          >
+            <ng-template pTemplate="header">
+              <div class="px-3 pt-3 pb-0">
+                <span class="font-bold">Nationality</span>
+              </div>
+            </ng-template>
+            <ng-template
+              pTemplate="filter"
+              let-value
+              let-filter="filterCallback"
+            >
+              <p-multiSelect
+                [ngModel]="value"
+                [options]="Nationality"
+                placeholder="Any"
+                defaultLabel="Select a Nationality"
+                (onChange)="filter($event.value)"
+                optionValue
+              >
+                <ng-template let-option pTemplate="item">
+                  <div class="inline-block vertical-align-middle">
+                    <span class="ml-1 mt-1">{{ option }}</span>
+                  </div>
+                </ng-template>
+              </p-multiSelect>
+            </ng-template>
+          </p-columnFilter>
+          <p-sortIcon field="nat"></p-sortIcon>
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter($any($event.target)?.value, 'name.first', 'contains')
+            "
+            [value]="$any(dt1.filters['name.first'])?.value"
+            placeholder="Search by Name"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter($any($event.target)?.value, 'gender', 'contains')
+            "
+            [value]="$any(dt1.filters['gender'])?.value"
+            placeholder="Search by Gender"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'location.city',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['location.city'])?.value"
+            placeholder="Search by Location"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter($any($event.target)?.value, 'email', 'contains')
+            "
+            [value]="$any(dt1.filters['email'])?.value"
+            placeholder="Search by E-mail"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'dob.age',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['dob.age'])?.value"
+            placeholder="Search by Current Age"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'registered.date',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['registered.date'])?.value"
+            placeholder="Search by Registered Date"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'phone',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['phone'])?.value"
+            placeholder="Search by Phone"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'picture.thumbnail',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['picture.thumbnail'])?.value"
+            placeholder="Search by Picture"
+            class="w-full"
+          />
+        </th>
+        <th>
+          <input
+            pInputText
+            type="text"
+            (input)="
+              dt1.filter(
+                $any($event.target)?.value,
+                'nat',
+                'contains'
+              )
+            "
+            [value]="$any(dt1.filters['nat'])?.value"
+            placeholder="Search by Nationality"
+            class="w-full"
+          />
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr>
+        <td>
+          {{ customer.name.first }}
+        </td>
+        <td>
+          <span class="ml-1 vertical-align-middle">{{ customer.gender }}</span>
+        </td>
+        <td>
+          {{ customer.location.city }}
+        </td>
+        <td>
+          {{ customer.email }}
+        </td>
+        <td>
+          {{ customer.dob.age }}
+        </td>
+        <td>
+          {{ customer.registered.date | date : 'MM/dd/yyyy' }}
+        </td>
+
+        <td>
+          {{ customer.phone }}
+        </td>
+        <td>
+          <img
+            src="{{ customer.picture.thumbnail }}"
+            width="32"
+            style="vertical-align: middle"
+          />
+        </td>
+        <td>
+          {{ customer.nat }}
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="7">No customers found.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
